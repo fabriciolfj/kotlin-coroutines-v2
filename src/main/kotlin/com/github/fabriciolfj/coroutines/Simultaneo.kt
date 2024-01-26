@@ -22,7 +22,7 @@ suspend fun doWorldv3() = coroutineScope {
     }
 
     launch {
-        delay(1000L)
+        delay(3000L)
         println("mundo 1")
     }
 
