@@ -39,3 +39,52 @@ Para obter o resultado de uma corrotina, você pode chamar await()a Deferredinst
   - vou fazer um processamento paralelo, mando executar em threads diferentes, para isso marco o launch com launch(Dispatchers.Default)
   - ao concluir, provavelmente terei uma variável de retorno,  e esta envolvo com withContext(Dispatchers.Main) { aqui } 
   - para que o retorno seja processado pela thread main, ou seja, que iniciou a requisição
+
+## Channels
+```
+Escrever código com um estado mutável compartilhado é bastante difícil e sujeito a erros (como na solução que usa retornos de chamada). Uma maneira mais simples é compartilhar informações por comunicação, em vez de usar um estado mutável comum. As corrotinas podem se comunicar entre si por meio de canais .
+
+Canais são primitivas de comunicação que permitem a passagem de dados entre corrotinas. Uma corrotina pode enviar algumas informações para um canal, enquanto outra pode receber essas informações dele:
+
+Usando canais
+Uma corrotina que envia (produz) informações costuma ser chamada de produtor, e uma corrotina que recebe (consome) informações é chamada de consumidor. Uma ou várias corrotinas podem enviar informações para o mesmo canal, e uma ou várias corrotinas podem receber dados dele:
+
+Usando canais com muitas corrotinas
+Quando muitas corrotinas recebem informações do mesmo canal, cada elemento é tratado apenas uma vez por um dos consumidores. Depois que um elemento é manipulado, ele é imediatamente removido do canal.
+
+Você pode pensar em um canal como algo semelhante a uma coleção de elementos, ou mais precisamente, uma fila, na qual os elementos são adicionados em uma extremidade e recebidos na outra. Porém, há uma diferença importante: diferentemente das coleções, mesmo em suas versões sincronizadas, um canal pode suspender send() operações receive(). Isso acontece quando o canal está vazio ou cheio. O canal pode estar cheio se o tamanho do canal tiver um limite superior.
+
+Channelé representado por três interfaces diferentes: SendChannel, ReceiveChannel, e Channel, com a última estendendo as duas primeiras. Normalmente você cria um canal e o entrega aos produtores como uma SendChannelinstância para que somente eles possam enviar informações ao canal. Você fornece um canal aos consumidores como uma ReceiveChannelinstância para que somente eles possam receber dele. Ambos os métodos sende receivesão declarados como suspend:
+
+interface SendChannel<in E> {
+    suspend fun send(element: E)
+    fun close(): Boolean
+}
+
+interface ReceiveChannel<out E> {
+    suspend fun receive(): E
+}
+
+interface Channel<E> : SendChannel<E>, ReceiveChannel<E>
+O produtor pode fechar um canal para indicar que não há mais elementos chegando.
+
+Vários tipos de canais são definidos na biblioteca. Eles diferem em quantos elementos podem armazenar internamente e se a send()chamada pode ser suspensa ou não. Para todos os tipos de canais, a receive()chamada se comporta de forma semelhante: recebe um elemento se o canal não estiver vazio; caso contrário, será suspenso.
+
+Canal ilimitado
+
+Canal em buffer
+
+Canal de encontro
+
+
+
+Canal combinado
+
+Ao criar um canal, especifique seu tipo ou tamanho do buffer (se precisar de um buffer):
+
+val rendezvousChannel = Channel<String>()
+val bufferedChannel = Channel<String>(10)
+val conflatedChannel = Channel<String>(CONFLATED)
+val unlimitedChannel = Channel<String>(UNLIMITED)
+Por padrão, um canal "Rendezvous" é criado.
+```
