@@ -9,20 +9,20 @@ fun main() = runBlocking<Unit> {
     launch {
         channel.send("A1")
         channel.send("A2")
-        log("A done")
+        logTest("A done")
     }
     launch {
         channel.send("B1")
-        log("B done")
+        logTest("B done")
     }
     launch {
         repeat(3) {
             val x = channel.receive()
-            log(x)
+            logTest(x)
         }
     }
 }
 
-fun log(message: Any?) {
+fun logTest(message: Any?) {
     println("[${Thread.currentThread().name}] $message")
 }

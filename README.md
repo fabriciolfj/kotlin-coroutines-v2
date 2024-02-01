@@ -139,6 +139,36 @@ Por padrão, um canal "Rendezvous" é criado.
 - podemos criar novos contextos usando coroutineContext, mas ela se tornára filha da coroutine externa chamadora
 - quando colocamos as coroutines como escopo Global, ela não é estruturada, ou seja, ela executa sozinha sem a relação pai-filho
 
+## funcoa suspend
+```
+ Uma função com a função suspend em Kotlin é uma função assíncrona que pode suspender/pausar sua execução sem bloquear threads ou uso intensivo de recursos.
+
+Algumas características de funções suspend:
+
+- São declaradas com a keyword `suspend`. Ex:
+
+suspend fun buscarDados() {
+
+}
+
+- Podem chamar outras funções `suspend`.
+
+- Suspendem coroutines quando trabalham em tarefas assíncronas como E/S ou esperando por dados.
+
+- Não bloqueiam threads - suspensão libera threads do pool.
+
+- Resumem depois que dados ou eventos assíncronos estão disponíveis.
+
+- Permitem que códigos assíncronos sejam escritos de forma sequencial, sem callbacks.
+
+Em apps Android, funções suspend são muito úteis para tarefas como chamadas de rede, acesso a banco de dados, leitura de arquivos, entre outras operações E/S.
+
+Elas simplificam muito códigos assíncronos em Kotlin!
+```
+
+## construtores de corountine
+- launch
+- async
 
 ## Cancelamento uma coroutine
 
@@ -146,3 +176,77 @@ Por padrão, um canal "Rendezvous" é criado.
 - por padrão são sequencias, ou seja, podemos chamar uma funcao, e em seguida outra funcao, somar o resultado das 2
 - podemos executar cada funcao de forma assincrona, usando o async, que retorna um Deferred (promisse/future, o launch retorna uma job), 
   - para pegar o valor async, que retorna um deferred, usamos o await. 
+
+## iniciando coroutines de forma preguiçosa
+- nesse caso a coroutine executa o procedimento, somente se for chamada, por start (manda iniciar o processo) ou await (aguarda até terminar)
+- para isso precisamos colocar o seguinte
+```
+val time = measureTimeMillis {
+    val one = async(start = CoroutineStart.LAZY) { doSomethingUsefulOne() }
+    val two = async(start = CoroutineStart.LAZY) { doSomethingUsefulTwo() }
+    // some computation
+    one.start() // start the first one
+    two.start() // start the second one
+    println("The answer is ${one.await() + two.await()}")
+}
+println("Completed in $time ms")
+
+```
+
+## coroutine scope
+```
+ Esta função utiliza o `coroutineScope` para executar duas tarefas assíncronas de forma concorrente usando coroutines, e depois soma os seus resultados.
+
+O `coroutineScope`:
+
+- É um escopo que garante que todas as coroutines iniciadas dentro dele serão canceladas/finalizadas quando sair do escopo.
+
+- É útil para agrupar lógicas assíncronas relacionadas e garantir que elas terminem juntas.
+
+Dentro do `coroutineScope` desta função:
+
+suspend fun concurrentSum(): Int = coroutineScope {
+    val one = async { doSomethingUsefulOne() }
+    val two = async { doSomethingUsefulTwo() }
+    one.await() + two.await()
+}
+
+- São iniciadas duas coroutines `async` para executar funções assíncronas em paralelo.
+
+- Usando `await()`, a função principal espera pelos resultados.
+
+- Soma os resultados retornados pelas duas coroutines.  
+
+- Ao sair do escopo, ele garantirá o cancelamento e fechamento automático das duas coroutines filhas.
+
+Então o `coroutineScope` é perfeito para gerenciar ciclos de vida e deixar o código mais limpo quando trabalhamos com coroutines, principalmente quando há múltiplas coroutines sendo executadas.
+```
+- ponto importante, quando usamos um runBlocking, ele já provê o escopo coroutines
+
+## Simultaneidade estruturada com assíncrono
+- quando temos a exeucao de varias coroutines dentro de um escopo, se uma der erro, todas sao canceladas, caso uma corountine filha der erro, o pai tambem é cancelado
+
+## contexto de coroutines e dispatchers
+- As corrotinas sempre são executadas em algum contexto representado por um valor do tipo CoroutineContext , definido na biblioteca padrão Kotlin.
+- O contexto da corountine é um conjunto de vários elementos. Os elementos principais são o Job da corrotina, que vimos antes, e seu despachante, que é abordado nesta seção.
+
+
+### dispatchers
+- determina qual thread a corountine correspondente usa para sua execução
+
+#### dispatcher unconfined vs confined
+- unconfined -> inicia na thread do chamador, e muda na primeira funcao de suspensao (suspense, delay e etc), retornando para a thread dessa funcao
+  - ideal para coroutines que nao usam muito tempo de cpu e não atualiza dados compartilhados
+- confined -> inicia e termina usando a thread do chamador
+```
+launch(Dispatchers.Unconfined) { // not confined -- will work with main thread
+    println("Unconfined      : I'm working in thread ${Thread.currentThread().name}")
+    delay(500)
+    println("Unconfined      : After delay in thread ${Thread.currentThread().name}")
+}
+launch { // context of the parent, main runBlocking coroutine
+    println("main runBlocking: I'm working in thread ${Thread.currentThread().name}")
+    delay(1000)
+    println("main runBlocking: After delay in thread ${Thread.currentThread().name}")
+}
+```

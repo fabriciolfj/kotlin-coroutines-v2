@@ -7,12 +7,16 @@ import kotlin.time.measureTime
 class CompondoSuspensao {
 }
 
+fun log(msg: String) = println("[${Thread.currentThread().name}] $msg")
+
 suspend fun doSomethingUsefulOne(): Int {
+    log("doSomethingUsefulOne")
     delay(1000L) // pretend we are doing something useful here
     return 13
 }
 
 suspend fun doSomethingUsefulTwo(): Int {
+    log("doSomethingUsefulTwo")
     delay(1000L) // pretend we are doing something useful here, too
     return 29
 }
