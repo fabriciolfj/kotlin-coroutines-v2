@@ -131,3 +131,10 @@ val conflatedChannel = Channel<String>(CONFLATED)
 val unlimitedChannel = Channel<String>(UNLIMITED)
 Por padrão, um canal "Rendezvous" é criado.
 ```
+
+## Cancelamento uma coroutine
+
+## Compondo funcoes de suspensao
+- por padrão são sequencias, ou seja, podemos chamar uma funcao, e em seguida outra funcao, somar o resultado das 2
+- podemos executar cada funcao de forma assincrona, usando o async, que retorna um Deferred (promisse/future, o launch retorna uma job), 
+  - para pegar o valor async, que retorna um deferred, usamos o await. 
