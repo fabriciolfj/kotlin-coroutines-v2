@@ -164,6 +164,8 @@ suspend fun buscarDados() {
 Em apps Android, funções suspend são muito úteis para tarefas como chamadas de rede, acesso a banco de dados, leitura de arquivos, entre outras operações E/S.
 
 Elas simplificam muito códigos assíncronos em Kotlin!
+
+Quando usamos alguma funcao de suspensao (delay por ex), é obrigatorio marcar a funcao como suspend
 ```
 
 ## construtores de corountine
