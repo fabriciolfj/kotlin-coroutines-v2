@@ -132,6 +132,14 @@ val unlimitedChannel = Channel<String>(UNLIMITED)
 Por padrão, um canal "Rendezvous" é criado.
 ```
 
+## Resumo entendimento
+- a coroutines é executada dentro de um escopo (relação pai-filho)
+- a execução coroutine pai é finalizada, quando as coroutines filhas são concluídas (simultaneidade estruturada)
+- o contexto de uma coroutine é o nome ou a thread aonde ela é executada (fazendo isso atravéls dos Dispatchers)
+- podemos criar novos contextos usando coroutineContext, mas ela se tornára filha da coroutine externa chamadora
+- quando colocamos as coroutines como escopo Global, ela não é estruturada, ou seja, ela executa sozinha sem a relação pai-filho
+
+
 ## Cancelamento uma coroutine
 
 ## Compondo funcoes de suspensao
