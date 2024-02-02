@@ -8,7 +8,8 @@ import kotlinx.coroutines.runBlocking
 class TypesDispatchers {
 }
 
-fun main() {
+suspend fun main() {
+    delay(100)
     test2()
 }
 

@@ -1,4 +1,5 @@
 # kotlin-coroutines-v2
+- site https://kotlinlang.org/docs/flow.html#processing-the-latest-value
 ```
 Quando uma coroutine suspende a execução, ela libera o thread que estava sendo usada mas não fica totalmente parada, ela aguarda pelo evento que irá disparar o seu resumo.
 
@@ -252,3 +253,55 @@ launch { // context of the parent, main runBlocking coroutine
     println("main runBlocking: After delay in thread ${Thread.currentThread().name}")
 }
 ```
+
+
+### withContext
+```
+ O `withContext()` é uma função suspensa do Kotlin que é muito útil quando trabalhamos com coroutines.
+
+Seu objetivo principal é mudar o contexto de execução das coroutines. 
+
+Alguns dos principais usos:
+
+- Alterar a thread onde a coroutine está executando, por exemplo para despachar um trecho de código para executar na main thread depois de fazer operações em background:
+
+withContext(Dispatchers.Main) {
+// atualizar UI na thread principal
+}
+
+- Alterar o contexto para um que já esteja configurado ou otimizado para uma determinada operação, como E/S com banco de dados ou chamadas de rede.
+
+- Agrupar trechos de código que devem executar no mesmo contexto.
+
+- Definir escopos customizados que controlam o ciclo de vida ou comportamentos das coroutines internas.
+
+Então o `withContext()` permite que você mude temporariamente o contexto das suas coroutines para o contexto mais adequado àquela operação. Isso mantém o código mais simples, legível e performático.
+```
+
+### join()
+- usado na coroutine pai, para aguardar a conclusao das coroutines filhas
+
+### MainScope vs CoroutineScope
+- mainscope usado para android ui
+- coroutineScope de uso mais geral, dentro de funcoes
+
+### Usando ThreadLocal
+- o valor da threadlocal não muda entre coroutine
+- se coroutine1 tem uma threadlocal com valor 100, passo ela para outra coroutine mudo para 200, dp quando volto para coroutine1, ela continua com 100
+
+### flow()
+- computar varios valores de forma assincrona
+- é chamado quando chamamos o collect
+- respeira o contexto do chamador, ou seja, nao vamos conseguir executar o flow usando um withContext para mudar de contexto
+
+### flowOn()
+- para executar o flow em um contexto diferente do chamador
+
+### buffering
+- executar o flux simultaneamente e nao sequencialmente
+
+### conflation
+- usado para ignorar valores intermediarios, quando o coletor e muito lento
+
+
+### Processing the latest value﻿
