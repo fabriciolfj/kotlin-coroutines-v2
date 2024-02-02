@@ -304,4 +304,7 @@ Então o `withContext()` permite que você mude temporariamente o contexto das s
 - usado para ignorar valores intermediarios, quando o coletor e muito lento
 
 
-### Processing the latest value﻿
+### xxxLatest
+- cancela o block de codigo quando vir um novo valor, que acaba sendo o ultimo
+
+### compose multiplo flows
