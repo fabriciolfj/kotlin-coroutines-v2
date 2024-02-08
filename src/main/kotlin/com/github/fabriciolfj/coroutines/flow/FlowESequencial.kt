@@ -1,4 +1,4 @@
-package com.github.fabriciolfj.coroutines
+package com.github.fabriciolfj.coroutines.flow
 
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect

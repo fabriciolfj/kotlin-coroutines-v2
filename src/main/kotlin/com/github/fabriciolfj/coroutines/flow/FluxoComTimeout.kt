@@ -1,7 +1,6 @@
-package com.github.fabriciolfj.coroutines
+package com.github.fabriciolfj.coroutines.flow
 
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull

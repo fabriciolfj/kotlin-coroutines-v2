@@ -307,4 +307,43 @@ Então o `withContext()` permite que você mude temporariamente o contexto das s
 ### xxxLatest
 - cancela o block de codigo quando vir um novo valor, que acaba sendo o ultimo
 
-### compose multiplo flows
+### combine vs zip flow
+```
+O combine e o zip são duas funções úteis para combinar múltiplos flows em Kotlin. Aqui estão as principais diferenças entre elas quando usadas com Coroutine Flows:
+
+- combine: 
+    - Combina valores de múltiplos flows em um único objeto do tipo especificado.
+    - Os flows devem emitir sequencialmente. Ou seja, primeiro o flow1 emite, depois o flow2, e assim por diante.
+    - Espera que todos os flows emitam um valor antes de emitir o objeto combinado.
+    - Se algum flow parar de emitir, o flow resultante também para.
+
+- zip:
+    - Emite tuplas contendo os valores emitidos de cada flow. 
+    - Os flows podem emitir valores em paralelo ou sequencialmente.
+    - Se algum flow parar de emitir valores, os demais podem continuar emitindo.
+    - O menor flow define o número de emissões do flow resultante.
+
+Em resumo, o combine sincroniza a emissão de múltiplos flows, enquanto o zip intercala as emissões mas não as sincroniza. Escolha combine quando precisa de valores sincronizados, e zip para uma "mescla" mais flexível.
+```
+
+### flatMapConcat
+- A concatenação de fluxos de fluxos é fornecida pelos operadores flatMapConcat e flattenConcat . 
+- Eles são os análogos mais diretos dos operadores de sequência correspondentes.
+- Eles esperam que o fluxo interno seja concluído antes de começar a coletar o próximo
+
+### flatMapMerge
+- Outra operação de nivelamento é coletar simultaneamente todos os fluxos recebidos e mesclar seus valores em um único fluxo 
+- para que os valores sejam emitidos o mais rápido possível. É implementado pelos operadores flatMapMerge e flattenMerge .
+- Ambos aceitam um concurrencyparâmetro opcional que limita o número de fluxos simultâneos coletados ao mesmo tempo (é igual a DEFAULT_CONCURRENCY por padrão).
+
+### flatMapLatest
+- De forma semelhante ao operador collectLatest , que foi descrito na seção "Processando o último valor" ,
+- existe o modo de nivelamento "Latest" correspondente onde a coleta do fluxo anterior é cancelada assim que um novo fluxo é emitido. 
+- É implementado pelo operador flatMapLatest .
+
+### exception
+- um fluxo pode ser concluido, quando o emissor ou o código dentro dos operadores, lançar uma exceção
+
+
+### operador launchIn
+- um operador terminal, que inicia a coleta em uma coroutine separada

@@ -1,5 +1,6 @@
-package com.github.fabriciolfj.coroutines
+package com.github.fabriciolfj.coroutines.flow
 
+import com.github.fabriciolfj.coroutines.simpleV7
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.system.*
