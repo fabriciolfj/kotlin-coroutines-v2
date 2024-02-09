@@ -1,5 +1,50 @@
 # kotlin-coroutines-v2
 - site https://kotlinlang.org/docs/flow.html#processing-the-latest-value
+- Uma coroutine é um tipo de função em algumas linguagens de programação que pode ter sua execução suspensa e retomada em outro momento.
+- Aqui está um exemplo em Kotlin explicando o contexto de corrotinas, scopes e tipos de corrotinas:
+
+```
+import kotlinx.coroutines.*
+
+fun main() = runBlocking<Unit> { // 1
+
+    launch { // launch é um scope de coroutine  
+        // 2
+        delay(1000L) 
+        println("Corrotina de escopo Global")
+    }
+    
+    coroutineScope { // coroutineScope = novo escopo  
+        launch {
+            delay(500L)     
+            println("Corrotina de escopo interno") 
+        }
+        
+        // aguarda corrotinas terminarem antes de fechar esse scope
+    }
+    
+    println("Código fora das corrotinas")
+    
+}
+
+```
+```
+Explicando os números:
+
+1. O `runBlocking` é um **scope especial** que aguarda todas as suas corrotinas filhas terminarem antes de finalizar.
+
+2. O `launch` inicia uma nova **coroutine estruturada** (não precisa fechar manualmente). As corrotinas estruturadas fazem parte do **escopo principal** da thread, diferente de threads novas.
+
+3. O `coroutineScope` cria um **novo escopo** onde podemos iniciar novas corrotinas. Ele aguarda essas corrotinas filhas terminarem antes de sair do escopo.
+
+Então podemos ver que as corrotinas:
+
+- Rodam dentro de um **contexto** e **escopo**
+- Podem criar novos escopos como o `coroutineScope`
+- Podem ser **estruturadas** (como o `launch`) ou precisa controlar manualmente (com `async`)
+
+O contexto e escopos controlam o ciclo de vida das corrotinas.
+```
 ```
 Quando uma coroutine suspende a execução, ela libera o thread que estava sendo usada mas não fica totalmente parada, ela aguarda pelo evento que irá disparar o seu resumo.
 
@@ -27,11 +72,11 @@ Para iniciar uma nova corrotina, use um dos principais construtores de corrotina
 
 asyncinicia uma nova corrotina e retorna um Deferredobjeto. Deferredrepresenta um conceito conhecido por outros nomes, como Futureou Promise. Armazena um cálculo, mas adia o momento em que você obtém o resultado final; promete o resultado em algum momento no futuro .
 
-A principal diferença entre async launch que launch usado para iniciar um cálculo que não deve retornar um resultado específico. launchretorna um Jobque representa a corrotina. É possível esperar até que seja concluído ligando para Job.join().
+A principal diferença entre async launch que async usado para iniciar um cálculo que não deve retornar um resultado específico. launchr retorna uma job que representa a corrotina. É possível esperar até que seja concluído ligando para Job.join().
 
-Deferredé um tipo genérico que estende Job. Uma asyncchamada pode retornar a Deferred<Int>ou a Deferred<CustomType>, dependendo do que o lambda retorna (a última expressão dentro do lambda é o resultado).
+Deferred é um tipo genérico que estende Job. Uma chamada assincrona pode retornar a Deferred<Int>ou a Deferred<CustomType>, dependendo do que o lambda retorna (a última expressão dentro do lambda é o resultado).
 
-Para obter o resultado de uma corrotina, você pode chamar await()a Deferredinstância. Enquanto aguarda o resultado, a corrotina de onde isso await()é chamado é suspensa
+Para obter o resultado de uma corrotina, você pode chamar await() na instância Deferred. Enquanto aguarda o resultado, a corrotina de onde é chamadoo await() é suspensa
 ```
 
 ## Contexto de threads
@@ -344,6 +389,30 @@ Em resumo, o combine sincroniza a emissão de múltiplos flows, enquanto o zip i
 ### exception
 - um fluxo pode ser concluido, quando o emissor ou o código dentro dos operadores, lançar uma exceção
 
-
 ### operador launchIn
 - um operador terminal, que inicia a coleta em uma coroutine separada
+
+
+## canais
+- forma de transferir valores entre coroutines
+
+#### fan-out
+- varias coroutines podem receber do mesmo canal, distribuindo o trabalho entre elas
+
+#### fant-in
+- vrias corountines podem ser enviadas para o mesmo canal
+
+#### canais com buffer
+- podemos definir uma capacidade de buffer no canal, e essa capacidade armazenará dados ate que fique cheia,
+- caso fique cheia, este será suspenso (capacidade 4 envio 5 mensagens, 4 fica no buffer na 5 suspende)
+- o suspende seria, até que algum receber ligue para o canal receber os dados
+
+
+#### canal ordem
+- a ordem do canal, segue: primero a entrar, primeiro a sair
+- no arquivo OrdemCanal, temos um exemplo, onde enviamos uma mensagem Ball(0), as 2 coroutines estão ouvindo o canal sem iniciadas, na ordem de declaracao
+
+#### canal ticker
+- produz um unit cada vez que um atraso passa desde o ultimo consumo deste canal
+- tenta manter uma taxa fixa de elementos produzidos, por exemplo:
+  - caso aja um atraso de 150ms para produzir um elemento, o proxímo  a ele também será atrasado automaticamente.
