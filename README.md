@@ -395,6 +395,9 @@ Em resumo, o combine sincroniza a emissão de múltiplos flows, enquanto o zip i
 
 ## canais
 - forma de transferir valores entre coroutines
+- quando tenho um ProducerScope, posso usar um cancel, quando tenho um CoroutineScope, posso usar um cancelChildren
+  - pois posso produzir dados infinitos, para interromper uso o cancel
+  - na coroutine posso ficar up infinito (while(true)), para interromper, chamo na corountine pai o coroutineContext.cancelChildren()
 
 #### fan-out
 - varias coroutines podem receber do mesmo canal, distribuindo o trabalho entre elas
