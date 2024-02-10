@@ -9,10 +9,11 @@ class Basico {
 
 
 fun main() = runBlocking{
-    launch {
-        delay(1000L)
+    val job = launch {
+       // delay(1000L)
         println("world")
     }
 
     println("hello")
+    //job.join()
 }

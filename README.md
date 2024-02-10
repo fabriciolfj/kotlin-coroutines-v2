@@ -419,3 +419,10 @@ Em resumo, o combine sincroniza a emissão de múltiplos flows, enquanto o zip i
 - produz um unit cada vez que um atraso passa desde o ultimo consumo deste canal
 - tenta manter uma taxa fixa de elementos produzidos, por exemplo:
   - caso aja um atraso de 150ms para produzir um elemento, o proxímo  a ele também será atrasado automaticamente.
+
+### Exeption coroutine
+
+#### propagacao
+- tempos dois tipos:
+  - propagacao -> launch (quando chamamos o join para aguarda as threads filhas, nao conseguimos capturar no try cath)
+  - expô-las ao usuário -> async (mostra a exception quando usamos o wait), producer
