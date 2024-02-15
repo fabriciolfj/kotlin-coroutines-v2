@@ -185,9 +185,9 @@ Por padrão, um canal "Rendezvous" é criado.
 - podemos criar novos contextos usando coroutineContext, mas ela se tornára filha da coroutine externa chamadora
 - quando colocamos as coroutines como escopo Global, ela não é estruturada, ou seja, ela executa sozinha sem a relação pai-filho
 
-## funcoa suspend
+## funcao suspend
 ```
- Uma função com a função suspend em Kotlin é uma função assíncrona que pode suspender/pausar sua execução sem bloquear threads ou uso intensivo de recursos.
+ A função suspend em Kotlin é uma função assíncrona que pode suspender/pausar sua execução sem bloquear threads ou uso intensivo de recursos.
 
 Algumas características de funções suspend:
 
@@ -470,4 +470,40 @@ Já o supervisorJob é um trabalho de corrotina (job) com comportamento similar:
 - Cancelar o pai CANCELA automaticamente todas as filhas.
 
 Então em resumo, supervisorScope e supervisorJob previnem a propagação automática de falhas e exceções entre corrotinas pai/filhas, permitindo mais controle e tratamento granular pelo pai.
+```
+
+# Compartilhando dados mutáveis entre coroutines
+- para funcionar, temos a seguintes opcoes:
+  - usar variavel atomic
+  - usar contexto singleThread
+```
+val counterContext = newSingleThreadContext("CounterContext")
+var counter = 0
+
+fun main() = runBlocking {
+    // confine everything to a single-threaded context
+    withContext(counterContext) {
+        massiveRun {
+            counter++
+        }
+    }
+    println("Counter = $counter")
+}
+```
+ - usar o mutex na parte que modifica a variavel, similar ao synchonized, mas não bloquea a thread
+```
+val mutex = Mutex()
+var counter = 0
+
+fun main() = runBlocking {
+    withContext(Dispatchers.Default) {
+        massiveRun {
+            // protect each increment with lock
+            mutex.withLock {
+                counter++
+            }
+        }
+    }
+    println("Counter = $counter")
+}
 ```
