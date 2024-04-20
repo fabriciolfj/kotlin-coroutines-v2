@@ -70,11 +70,11 @@ As corrotinas Kotlin consomem muito menos recursos do que os threads. Cada vez q
 
 Para iniciar uma nova corrotina, use um dos principais construtores de corrotina : launch, async, ou runBlocking. Bibliotecas diferentes podem definir construtores de corrotinas adicionais.
 
-asyncinicia uma nova corrotina e retorna um Deferredobjeto. Deferredrepresenta um conceito conhecido por outros nomes, como Futureou Promise. Armazena um cálculo, mas adia o momento em que você obtém o resultado final; promete o resultado em algum momento no futuro .
+async inicia uma nova corrotina e retorna um Deferred objeto. Deferred representa um conceito conhecido por outros nomes, como Future ou Promise. Armazena um cálculo, mas adia o momento em que você obtém o resultado final; promete o resultado em algum momento no futuro .
 
 A principal diferença entre async launch que async usado para iniciar um cálculo que não deve retornar um resultado específico. launch retorna uma job que representa a corrotina. É possível esperar até que seja concluído ligando para Job.join().
 
-Deferred é um tipo genérico que estende Job. Uma chamada assincrona pode retornar a Deferred<Int>ou a Deferred<CustomType>, dependendo do que o lambda retorna (a última expressão dentro do lambda é o resultado).
+Deferred é um tipo genérico que estende Job. Uma chamada assincrona pode retornar a Deferred<Int> ou a Deferred<CustomType>, dependendo do que o lambda retorna (a última expressão dentro do lambda é o resultado).
 
 Para obter o resultado de uma corrotina, você pode chamar await() na instância Deferred. Enquanto aguarda o resultado, a corrotina de onde é chamadoo await() é suspensa
 ```
@@ -92,16 +92,16 @@ O escopo da corrotina é responsável pela estrutura e pelos relacionamentos pai
 
 O contexto da corrotina armazena informações técnicas adicionais usadas para executar uma determinada corrotina, como o nome personalizado da corrotina ou o despachante que especifica os threads nos quais a corrotina deve ser agendada.
 
-Quando launch, async, ou runBlockingsão usados para iniciar uma nova corrotina, eles criam automaticamente o escopo correspondente. Todas essas funções usam um lambda com um receptor como argumento e CoroutineScopesão do tipo de receptor implícito:
+Quando launch, async, ou runBlockingsão usados para iniciar uma nova corrotina, eles criam automaticamente o escopo correspondente. Todas essas funções usam um lambda com um receptor como argumento e CoroutineScope são do tipo de receptor implícito:
 
 launch { /* this: CoroutineScope */ }
 Novas corrotinas só podem ser iniciadas dentro de um escopo.
 
 launch async são declarados como extensões de CoroutineScope, portanto, um receptor implícito ou explícito sempre deve ser passado quando você os chama.
 
-A corrotina iniciada por runBlockingé a única exceção porque runBlockingé definida como uma função de nível superior. Mas, como bloqueia o thread atual, destina-se principalmente ao uso em main()funções e testes como uma função de ponte.
+A corrotina iniciada por runBlocking é a única exceção porque runBlocking é definida como uma função de nível superior. Mas, como bloqueia o thread atual, destina-se principalmente ao uso em main()funções e testes como uma função de ponte.
 
-Uma nova corrotina dentro de runBlocking, launchou asyncé iniciada automaticamente dentro do escopo:
+Uma nova corrotina dentro de runBlocking, launch ou async é iniciada automaticamente dentro do escopo:
 
 import kotlinx.coroutines.*
 
@@ -110,11 +110,11 @@ fun main() = runBlocking { /* this: CoroutineScope */
     // the same as:
     this.launch { /* ... */ }
 }
-Quando você chama launchinside runBlocking, ele é chamado como uma extensão do receptor implícito do CoroutineScopetipo. Alternativamente, você poderia escrever explicitamente this.launch.
+Quando você chama launch inside runBlocking, ele é chamado como uma extensão do receptor implícito do tipo CoroutineScope. Alternativamente, você poderia escrever explicitamente this.launch.
 
 A corrotina aninhada (iniciada por launchneste exemplo) pode ser considerada filha da corrotina externa (iniciada por runBlocking). Esse relacionamento “pai-filho” funciona por meio de escopos; a corrotina filha é iniciada a partir do escopo correspondente à corrotina pai.
 
-É possível criar um novo escopo sem iniciar uma nova corrotina, usando a coroutineScopefunção. Para iniciar novas corrotinas de forma estruturada dentro de uma suspendfunção sem acesso ao escopo externo, você pode criar um novo escopo de corrotina que automaticamente se torna filho do escopo externo a partir do qual esta suspendfunção é chamada. loadContributorsConcurrent()é um bom exemplo.
+É possível criar um novo escopo sem iniciar uma nova corrotina, usando a coroutineScope função. Para iniciar novas corrotinas de forma estruturada dentro de uma suspend função sem acesso ao escopo externo, você pode criar um novo escopo de corrotina que automaticamente se torna filho do escopo externo a partir do qual esta suspend função é chamada. loadContributorsConcurrent()é um bom exemplo.
 
 Você também pode iniciar uma nova corrotina no escopo global usando GlobalScope.asyncou GlobalScope.launch. Isso criará uma corrotina "independente" de nível superior.
 
@@ -143,7 +143,7 @@ Quando muitas corrotinas recebem informações do mesmo canal, cada elemento é 
 
 Você pode pensar em um canal como algo semelhante a uma coleção de elementos, ou mais precisamente, uma fila, na qual os elementos são adicionados em uma extremidade e recebidos na outra. Porém, há uma diferença importante: diferentemente das coleções, mesmo em suas versões sincronizadas, um canal pode suspender send() operações receive(). Isso acontece quando o canal está vazio ou cheio. O canal pode estar cheio se o tamanho do canal tiver um limite superior.
 
-Channelé representado por três interfaces diferentes: SendChannel, ReceiveChannel, e Channel, com a última estendendo as duas primeiras. Normalmente você cria um canal e o entrega aos produtores como uma SendChannelinstância para que somente eles possam enviar informações ao canal. Você fornece um canal aos consumidores como uma ReceiveChannelinstância para que somente eles possam receber dele. Ambos os métodos sende receivesão declarados como suspend:
+Channel é representado por três interfaces diferentes: SendChannel, ReceiveChannel, e Channel, com a última estendendo as duas primeiras. Normalmente você cria um canal e o entrega aos produtores como uma SendChannel instância para que somente eles possam enviar informações ao canal. Você fornece um canal aos consumidores como uma ReceiveChannel instância para que somente eles possam receber dele. Ambos os métodos send e receive são declarados como suspend:
 
 interface SendChannel<in E> {
     suspend fun send(element: E)
@@ -181,7 +181,7 @@ Por padrão, um canal "Rendezvous" é criado.
 ## Resumo entendimento
 - a coroutines é executada dentro de um escopo (relação pai-filho)
 - a execução coroutine pai é finalizada, quando as coroutines filhas são concluídas (simultaneidade estruturada)
-- o contexto de uma coroutine é o nome ou a thread aonde ela é executada (fazendo isso atravéls dos Dispatchers)
+- o contexto de uma coroutine é o nome ou a thread aonde ela é executada (fazendo isso através dos Dispatchers)
 - podemos criar novos contextos usando coroutineContext, mas ela se tornára filha da coroutine externa chamadora
 - quando colocamos as coroutines como escopo Global, ela não é estruturada, ou seja, ela executa sozinha sem a relação pai-filho
 
@@ -272,7 +272,7 @@ Então o `coroutineScope` é perfeito para gerenciar ciclos de vida e deixar o c
 - ponto importante, quando usamos um runBlocking, ele já provê o escopo coroutines
 
 ## Simultaneidade estruturada com assíncrono
-- quando temos a exeucao de varias coroutines dentro de um escopo, se uma der erro, todas sao canceladas, caso uma corountine filha der erro, o pai tambem é cancelado
+- quando temos a execucaow de varias coroutines dentro de um escopo, se uma der erro, todas sao canceladas, caso uma corountine filha der erro, o pai tambem é cancelado
 
 ## contexto de coroutines e dispatchers
 - As corrotinas sempre são executadas em algum contexto representado por um valor do tipo CoroutineContext , definido na biblioteca padrão Kotlin.
@@ -379,7 +379,7 @@ Em resumo, o combine sincroniza a emissão de múltiplos flows, enquanto o zip i
 ### flatMapMerge
 - Outra operação de nivelamento é coletar simultaneamente todos os fluxos recebidos e mesclar seus valores em um único fluxo 
 - para que os valores sejam emitidos o mais rápido possível. É implementado pelos operadores flatMapMerge e flattenMerge .
-- Ambos aceitam um concurrencyparâmetro opcional que limita o número de fluxos simultâneos coletados ao mesmo tempo (é igual a DEFAULT_CONCURRENCY por padrão).
+- Ambos aceitam um concurrency parâmetro opcional que limita o número de fluxos simultâneos coletados ao mesmo tempo (é igual a DEFAULT_CONCURRENCY por padrão).
 
 ### flatMapLatest
 - De forma semelhante ao operador collectLatest , que foi descrito na seção "Processando o último valor" ,
