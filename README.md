@@ -92,7 +92,7 @@ O escopo da corrotina é responsável pela estrutura e pelos relacionamentos pai
 
 O contexto da corrotina armazena informações técnicas adicionais usadas para executar uma determinada corrotina, como o nome personalizado da corrotina ou o despachante que especifica os threads nos quais a corrotina deve ser agendada.
 
-Quando launch, async, ou runBlockingsão usados para iniciar uma nova corrotina, eles criam automaticamente o escopo correspondente. Todas essas funções usam um lambda com um receptor como argumento e CoroutineScope são do tipo de receptor implícito:
+Quando launch, async, ou runBlocking são usados para iniciar uma nova corrotina, eles criam automaticamente o escopo correspondente. Todas essas funções usam um lambda com um receptor como argumento e CoroutineScope são do tipo de receptor implícito:
 
 launch { /* this: CoroutineScope */ }
 Novas corrotinas só podem ser iniciadas dentro de um escopo.
@@ -112,19 +112,19 @@ fun main() = runBlocking { /* this: CoroutineScope */
 }
 Quando você chama launch inside runBlocking, ele é chamado como uma extensão do receptor implícito do tipo CoroutineScope. Alternativamente, você poderia escrever explicitamente this.launch.
 
-A corrotina aninhada (iniciada por launchneste exemplo) pode ser considerada filha da corrotina externa (iniciada por runBlocking). Esse relacionamento “pai-filho” funciona por meio de escopos; a corrotina filha é iniciada a partir do escopo correspondente à corrotina pai.
+A corrotina alinhada (iniciada por launch neste exemplo) pode ser considerada filha da corrotina externa (iniciada por runBlocking). Esse relacionamento “pai-filho” funciona por meio de escopos; a corrotina filha é iniciada a partir do escopo correspondente à corrotina pai.
 
 É possível criar um novo escopo sem iniciar uma nova corrotina, usando a coroutineScope função. Para iniciar novas corrotinas de forma estruturada dentro de uma suspend função sem acesso ao escopo externo, você pode criar um novo escopo de corrotina que automaticamente se torna filho do escopo externo a partir do qual esta suspend função é chamada. loadContributorsConcurrent()é um bom exemplo.
 
-Você também pode iniciar uma nova corrotina no escopo global usando GlobalScope.asyncou GlobalScope.launch. Isso criará uma corrotina "independente" de nível superior.
+Você também pode iniciar uma nova corrotina no escopo global usando GlobalScope.async ou GlobalScope.launch. Isso criará uma corrotina "independente" de nível superior.
 
 O mecanismo por trás da estrutura das corrotinas é chamado de simultaneidade estruturada . Ele fornece os seguintes benefícios em relação aos escopos globais:
 
-O escopo geralmente é responsável pelas corrotinas filhas, cujo tempo de vida está vinculado ao tempo de vida do escopo.
+ - O escopo geralmente é responsável pelas corrotinas filhas, cujo tempo de vida está vinculado ao tempo de vida do escopo.
 
-O escopo pode cancelar automaticamente as corrotinas filhas se algo der errado ou se um usuário mudar de ideia e decidir revogar a operação.
+ - O escopo pode cancelar automaticamente as corrotinas filhas se algo der errado ou se um usuário mudar de ideia e decidir revogar a operação.
 
-O escopo aguarda automaticamente a conclusão de todas as corrotinas filhas. Portanto, se o escopo corresponder a uma corrotina, a corrotina pai não será concluída até que todas as corrotinas lançadas em seu escopo sejam concluídas.
+ - O escopo aguarda automaticamente a conclusão de todas as corrotinas filhas. Portanto, se o escopo corresponder a uma corrotina, a corrotina pai não será concluída até que todas as corrotinas lançadas em seu escopo sejam concluídas.
 
 Ao usar GlobalScope.async, não há estrutura que vincule várias corrotinas a um escopo menor. As corrotinas iniciadas no escopo global são todas independentes – seu tempo de vida é limitado apenas pelo tempo de vida de todo o aplicativo. É possível armazenar uma referência à corrotina iniciada no escopo global e aguardar sua conclusão ou cancelá-la explicitamente, mas isso não acontecerá automaticamente como aconteceria com a simultaneidade estruturada.
 ```
