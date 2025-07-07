@@ -507,3 +507,15 @@ fun main() = runBlocking {
     println("Counter = $counter")
 }
 ```
+## Quando usar fluxo frio, quente, compartilhado ou estado
+
+# Tabela 16.1 Fluxos quentes e frios têm propriedades e comportamentos diferentes
+
+
+| Fluxo frio | Fluxo quente |
+|------------|--------------|
+| Inerte por padrão (acionado pelo coletor) | Ativo por padrão |
+| Tem um colecionador | Tem vários assinantes |
+| O coletor recebe todas as emissões | Os assinantes recebem emissões desde o início da assinatura |
+| Potencialmente completa | Não completa |
+| As emissões ocorrem a partir de uma única corrotina (a menos que channe LF1owseja usada). | Emissões podem ocorrer a partir de corrotinas arbitrárias. |
