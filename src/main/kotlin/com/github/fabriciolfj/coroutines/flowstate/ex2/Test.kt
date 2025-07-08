@@ -1,4 +1,4 @@
-package com.github.fabriciolfj.coroutines.flowcold
+package com.github.fabriciolfj.coroutines.flowstate.ex2
 
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.*
