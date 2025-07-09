@@ -29,10 +29,10 @@ val handler = CoroutineExceptionHandler { _, exception ->
 
 fun main() {
 
-    val scope = CoroutineScope(Dispatchers.Default + handler)
+    val scope = CoroutineScope(Dispatchers.Default)
 
     runBlocking {
-        scope.launch {
+        scope.launch(handler) {
             val api = ApiService()
             val dados = api.buscarDados()
             println(dados)
