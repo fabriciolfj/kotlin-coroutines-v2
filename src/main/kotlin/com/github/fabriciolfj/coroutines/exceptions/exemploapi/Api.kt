@@ -20,14 +20,14 @@ class ApiService {
 }
 
 class ApiException(message: String) : Exception(message)
+val handler = CoroutineExceptionHandler { _, exception ->
+    when (exception) {
+        is ApiException -> println("Erro da API: ${exception.message}")
+        else -> println("Erro inesperado: ${exception.message}")
+    }
+}
 
 fun main() {
-    val handler = CoroutineExceptionHandler { _, exception ->
-        when (exception) {
-            is ApiException -> println("Erro da API: ${exception.message}")
-            else -> println("Erro inesperado: ${exception.message}")
-        }
-    }
 
     val scope = CoroutineScope(Dispatchers.Default + handler)
 
